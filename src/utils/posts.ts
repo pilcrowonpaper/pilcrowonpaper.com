@@ -23,7 +23,7 @@ async function resolveMarkdownImportEntry(relativePath: string, resolveImport: R
 		title: markdown.frontmatter.title,
 		date: new Date(markdown.frontmatter.date.replaceAll("-", "/")),
 		hidden: markdown.frontmatter.hidden ?? false,
-		href: ["blog", postId].join("/")
+		href: "/" + ["blog", postId].join("/")
 	};
 	return post;
 }
