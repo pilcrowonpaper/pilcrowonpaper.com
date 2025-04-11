@@ -18,7 +18,7 @@ There are multiple variations of OAuth 2.0 (plus OAuth 1.0), but the most common
 2. User is authenticated by the provider
 3. User is redirected back to your server with a secret code
 4. Exchange that secret code for the user's access token
-5. Use the access token access the user's data
+5. Use the access token to access the user's data
 
 I'll be referring to these steps throughout the guide.
 
@@ -26,7 +26,7 @@ I'll be referring to these steps throughout the guide.
 
 ### How it plays into your auth
 
-While it's an _authorization_ and not an _authentication_ framework, it usually requires an authentication step at the provider's end and the user's profile can be retrieved using the issued access token. This means you can verify the user's identity while off loading many steps required when implementing email and password auth, including email verification, password reset, two factor authorization..
+While it's an _authorization_ and not an _authentication_ framework, it usually requires an authentication step at the provider's end and the user's profile can be retrieved using the issued access token. This means you can verify the user's identity while offloading many steps required when implementing email and password auth, including email verification, password reset, two factor authorization..
 
 However, **it does not mean OAuth handles everything required in implementing auth**. You still need to keep your own user table and manage sessions. The access token should never be used as replacement for sessions.
 
