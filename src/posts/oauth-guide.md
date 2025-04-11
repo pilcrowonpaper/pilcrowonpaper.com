@@ -18,7 +18,7 @@ There are multiple variations of OAuth 2.0 (plus OAuth 1.0), but the most common
 2. User is authenticated by the provider
 3. User is redirected back to your server with a secret code
 4. Exchange that secret code for the user's access token
-5. Use the access token access the user's data
+5. Use the access token to access the user's data
 
 I'll be referring to these steps throughout the guide.
 
