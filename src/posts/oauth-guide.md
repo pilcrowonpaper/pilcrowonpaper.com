@@ -26,7 +26,7 @@ I'll be referring to these steps throughout the guide.
 
 ### How it plays into your auth
 
-While it's an _authorization_ and not an _authentication_ framework, it usually requires an authentication step at the provider's end and the user's profile can be retrieved using the issued access token. This means you can verify the user's identity while off loading many steps required when implementing email and password auth, including email verification, password reset, two factor authorization..
+While it's an _authorization_ and not an _authentication_ framework, it usually requires an authentication step at the provider's end and the user's profile can be retrieved using the issued access token. This means you can verify the user's identity while offloading many steps required when implementing email and password auth, including email verification, password reset, two factor authorization..
 
 However, **it does not mean OAuth handles everything required in implementing auth**. You still need to keep your own user table and manage sessions. The access token should never be used as replacement for sessions.
 
