@@ -2,9 +2,9 @@
 
 <aside class="post-description">This blog post was published on March 22nd, 2026.</aside>
 
-<p>The first rule of user passwords is never store them as plain text. The second rule is to use Bcrypt. Argon2 is a newer algorithm that gets recommended over Bcrypt, but the main principle is still the same. Use a slow hashing algorithm that's designed for passwords.</p>
+<p>The first rule of user passwords is never store them as plain text. The second rule is to use Bcrypt. Argon2 is a newer algorithm that gets recommended over Bcrypt, but the main principle is still the same: use a slow hashing algorithm that's designed for passwords.</p>
 
-<p>But, why is Argon2 superior to Bcrypt? On the surface, Argon2 has less foot-guns that Bcrypt. Bcrypt has a maximum password length of 72 bytes and that 72 bytes needs to be a null-terminated string. Argon2 on the other hand doesn't have a password length limit and works with any binary data. I think this alone is a good enough reason to use Argon2 over Bcrypt in newer systems. Still, newer algorithms aren't always more secure. Is it possible that Argon2 is weaker than Bcrypt?</p>
+<p>But, why is Argon2 better than Bcrypt? On the surface, Argon2 has less foot-guns that Bcrypt. Bcrypt has a maximum password length of 72 bytes and that 72 bytes needs to be a null-terminated string. Argon2 on the other hand doesn't have a password length limit and works with any binary data. I think this alone is a good enough reason to use Argon2 over Bcrypt. Still, newer algorithms aren't always more secure. Is it possible that Argon2 is weaker than Bcrypt?</p>
 
 <blockquote>
     <p>Password hashing generally needs to complete &lt; 1000 ms. In this scenario, bcrypt is stronger than pbkdf2, scrypt, and argon2.</p>
