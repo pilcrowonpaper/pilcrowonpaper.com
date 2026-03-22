@@ -1,0 +1,30 @@
+name: "Deploy"
+on:
+  push:
+    branches:
+      - main
+
+env:
+  CLOUDFLARE_API_TOKEN: ${{secrets.CLOUDFLARE_API_TOKEN}}
+
+jobs:
+  publish:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up actions
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Generate files
+        run: go run .
+
+      - name: Install wrangler
+        run: npm i -g wrangler
+
+      - name: Deploy to Cloudflare Workers
+        run: npx wrangler deploy
