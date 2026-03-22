@@ -69,7 +69,8 @@ func createNotFoundPageHTML() string {
 var stylesheetCSS string
 
 func createPageHTML(title string, mainHTML string) string {
-	pageHTMLTemplate := `<html lang="en">
+	pageHTMLTemplate := `<!DOCTYPE html>
+<html lang="en">
 <head>
 	<title>%s</title>
 	<meta name="description" content="Pilcrow's personal website." />
