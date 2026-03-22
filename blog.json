@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "title": "A look into \"GDPR compliant\" analytics",
+        "published_date": "2023-05-23"
+    },
+    {
+        "id": 13,
+        "title": "Managing NPM releases",
+        "published_date": "2025-01-26"
+    },
+    {
+        "id": 14,
+        "title": "Is Argon2 actually better than Bcrypt?",
+        "published_date": "2026-03-22"
+    }
+]

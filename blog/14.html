@@ -1,0 +1,435 @@
+<h1>Is Argon2 actually better than Bcrypt?</h1>
+
+<aside class="post-description">This blog post was published on March 22nd, 2026.</aside>
+
+<p>The first rule of user passwords is never store them as plain text. The second rule is to use Bcrypt. Argon2 is a newer algorithm that gets recommended over Bcrypt, but the main principle is still the same. Use a slow hashing algorithm that's designed for passwords.</p>
+
+<p>But, why is Argon2 superior to Bcrypt? On the surface, Argon2 has less foot-guns that Bcrypt. Bcrypt has a maximum password length of 72 bytes and that 72 bytes needs to be a null-terminated string. Argon2 on the other hand doesn't have a password length limit and works with any binary data. I think this alone is a good enough reason to use Argon2 over Bcrypt in newer systems. Still, newer algorithms aren't always more secure. Is it possible that Argon2 is weaker than Bcrypt?</p>
+
+<blockquote>
+    <p>Password hashing generally needs to complete &lt; 1000 ms. In this scenario, bcrypt is stronger than pbkdf2, scrypt, and argon2.</p>
+    <footer><a href="https://en.wikipedia.org/wiki/Bcrypt"><cite>Wikipedia</cite></a></footer>
+</blockquote>
+
+<p>Password cracking is mostly done with GPUs these days because they're much better at hashing than CPUs. Hashing is just a series of small computation and the GPU's many tiny compute units excel at these kind of work. The table below shows hashing speeds of SHA-256, a fast and simple hashing algorithm, between different hardware. The CPU benchmarks were ran using Go's <code>crypto/sha2</code> standard library package and GPU benchmarks are from publicly available benchmarks. The device cost is either the rough second-hand market price or the retail price, whichever is cheaper.</p>
+
+<div class="table-wrapper">
+    <table>
+        <caption>SHA-256 hashing performance</caption>
+        <thead>
+            <tr>
+                <th>Device</th>
+                <th style="text-align: right;">Hashing speed<br>(hashes per second)</th>
+                <th style="text-align: right;">Cost<br>(hashes per second per dollar)</th>
+                <th style="text-align: right;">Power efficiency<br>(hashes per second per watt)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Hetzner CCX23 (CPU)</td>
+                <td style="text-align: right;">40,365,462</td>
+                <td style="text-align: right;">?</td>
+                <td style="text-align: right;">?</td>
+            </tr>
+            <tr>
+                <td>MacBook Air M1 8 cores (CPU, 2020)</td>
+                <td style="text-align: right;">90,800,749</td>
+                <td style="text-align: right;">302,669</td>
+                <td style="text-align: right;">3,026,691</td>
+            </tr>
+            <tr>
+                <td>MacBook Pro M3 Pro 11 cores (CPU, 2023)</td>
+                <td style="text-align: right;">171,638,888</td>
+                <td style="text-align: right;">156,177</td>
+                <td style="text-align: right;">5,721,296</td>
+            </tr>
+            <tr>
+                <td>GTX 1080 (GPU, 2016)</td>
+                <td style="text-align: right;">2,439,500,000</td>
+                <td style="text-align: right;">16,263,333</td>
+                <td style="text-align: right;">13,552,777</td>
+            </tr>
+            <tr>
+                <td>RTX 5090 (GPU, 2025)</td>
+                <td style="text-align: right;">28,353,300,000</td>
+                <td style="text-align: right;">14,183,741</td>
+                <td style="text-align: right;">48,885,000</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p>The CPU numbers can be improved further but we see that GPUs are 50 to 100 times faster and 5 to 10 times more efficient.</p>
+
+<p>The design of Argon2 attempts to close this gap by using a significant amount of memory. Argon2 can be configured to use anywhere from a few kilobytes to gigabytes of memory per hash. While GPUs are fast at pure computation, its memory (VRAM) has a limit on how fast it can transfer data (memory bandwidth) like regular RAM. Argon2's massive memory usage bottlenecks the GPU's memory bandwidth and puts a hard limit on how fast the GPU can calculate hashes. The faster L1 and L2 cache aren't useful either as these aren't large enough to handle multiple processes at once. Additionally, once you set the memory configuration high enough, the GPU quickly runs out of memory for more processes and has to put many of its compute units in idle.</p>
+
+<p>Argon2 has 3 parameters: memory size, iteration count, and degree of parallelism. For a memory size <code>m</code> bytes and iteration count <code>t</code> with parallelism set to 1 (single thread), the total number of bytes read and written to memory is calculated by:</p>
+
+<pre><code>(3 × t - 1) × m</code></pre>
+
+<p>For example, Argon2 at 16 kibibytes and 3 iterations will read and write approximately 128 mebibytes. Argon2 also has 3 variations (Argon2i, Argon2d, Argon2id) to be exact but they have similar performance when using the same parameters so I'll be grouping them as the same algorithm.</p>
+
+<p>The table below shows the estimated hashing speed based on the GPU's bandwidth and the actual hashing speeds at different memory configuration for the Nvidia GTX 1080 (2016) and Nvidia RTX 5090 (2025) GPU. The actual hashing speed are from benchmarks ran with <a href="https://www.openwall.com/john/">John the Ripper</a>, an open-source password cracking tool.</p>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 1px;">Memory size</th>
+                <th style="text-align: right;">Bandwidth-estimated hashing speed<br>(hashes per second)</th>
+                <th style="text-align: right;">Actual hashing speed<br>(hashes per second)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align: right;">16 MiB</td>
+                <td style="text-align: right;">2,441</td>
+                <td style="text-align: right;">1,742</td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">64 MiB</td>
+                <td style="text-align: right;">610</td>
+                <td style="text-align: right;">387</td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">256 MiB</td>
+                <td style="text-align: right;">153</td>
+                <td style="text-align: right;">34</td>
+            </tr>
+        </tbody>
+        <caption>Argon2 with varying memory configuration at 3 iterations and 1 degree of parallelism on a GTX 1080</caption>
+    </table>
+</div>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 1px;">Memory size</th>
+                <th style="text-align: right;">Bandwidth-estimated hashing speed<br>(hashes per second)</th>
+                <th style="text-align: right;">Actual hashing speed<br>(hashes per second)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align: right;">16 MiB</td>
+                <td style="text-align: right;">13,672</td>
+                <td style="text-align: right;">11,465</td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">64 MiB</td>
+                <td style="text-align: right;">3,418</td>
+                <td style="text-align: right;">2,400</td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">256 MiB</td>
+                <td style="text-align: right;">854</td>
+                <td style="text-align: right;">178</td>
+            </tr>
+        </tbody>
+        <caption>Argon2 with varying memory configuration at 3 iterations and 1 degree of parallelism on an RTX 5090</caption>
+    </table>
+</div>
+
+<p>On both the GTX 1080 and RTX 5090, the benchmark numbers generally align with our estimate at 16 mebibytes and 64 mebibytes of memory. As expected, the GPUs also see a linear slowdown as it needs to read and write more bytes. However, the GPU experiences a quadratic slowdown when the memory parameter is increased to 256 mebibytes from 64 mebibytes. This indicates that both GPUs are limited by its memory size at around 64 mebibytes. After this point, the GPU has to do twice the work with half the compute units when the memory requirement doubles. I'm unsure why the GTX 1080 sees lower bandwidth utilization than the RTX 5090 (about 70% vs 80%) but the smaller compute power compared to the available memory bandwidth may be relevant.</p>
+
+<p>On the other hand, Bcrypt closes the gap between CPUs and GPUs by making small and random reads from memory. Aside from bandwidth, VRAM also has a limit on transaction speed as each transactions are made at a set size (bus width). Individual Bcrypt transactions are smaller than the bus width of modern GPUs and a significant amount of the memory bandwidth is wasted. This theoretically makes Bcrypt around 4 to 8 times slower than Argon2 with similar memory transaction usage on a GPU.</p>
+
+<p>However, Bcrypt only requires 4 kibibytes of memory per hash. This is small enough to run many processes using the shared memory of GPU's Streaming Multiprocessors (SM). While the L1 and L2 cache are read-only and managed by the hardware, the shared memory is a programmable memory pool that allows for direct read and write access. This moves the limiting factor from the memory bandwidth to the size of the shared memory.</p>
+
+<p>Unlike Argon2, Bcrypt only has a single cost parameter. Increasing this value by 1 doubles the workload and the hashing time. With Bcrypt, the slowdown scales linearly with the cost factor.</p>
+
+<p>An ideal hash function is one that's as fast as possible for the defender (CPU) but as slow as possible for the attacker (GPU). Below is a table listing the hashing speed between Argon2 and Bcrypt on a Hetzner CCX23 instance using Go's <code>golang.org/x/crypto</code> packages. I saw inconsistent performance between different Hetzner instances likely stemming from different server hardware so I've opted to use the benchmark result from the best performing instance.</p>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Hash function</th>
+                <th style="text-align: right;">Hashing time<br>(milliseconds)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Argon2 (16 MiB, 3 iterations, 1 thread)</td>
+                <td style="text-align: right;">23</td>
+            </tr>
+            <tr>
+                <td>Argon2 (64 MiB, 3 iterations, 1 thread)</td>
+                <td style="text-align: right;">107</td>
+            </tr>
+            <tr>
+                <td>Argon2 (256 MiB, 3 iterations, 1 thread)</td>
+                <td style="text-align: right;">460</td>
+            </tr>
+            <tr>
+                <td>Bcrypt (cost 9)</td>
+                <td style="text-align: right;">24</td>
+            </tr>
+            <tr>
+                <td>Bcrypt (cost 11)</td>
+                <td style="text-align: right;">100</td>
+            </tr>
+            <tr>
+                <td>Bcrypt (cost 13)</td>
+                <td style="text-align: right;">405</td>
+            </tr>
+        </tbody>
+        <caption>Hashing time on a Hetzner CCX23 instance</caption>
+    </table>
+</div>
+
+<p>Next, the tables below shows the hashing speeds of Argon2 and Bcrypt for the GTX 1080 and RTX 5090. The attacker advantage quantifies how much faster the GPU is compared to a Hetzner CCX23 instance. It is calculated by dividing the GPU's hashing speed by the CPU's hashing speed. The GPU hashing speeds of Bcrypt was derived from <a href="https://hashcat.net">Hashcat</a> benchmarks and scaled according to the cost value. Hashcat is another popular password cracking tool and often used to benchmark GPUs. Note that Hashcat benchmarks can vary somewhat depending on the Hashcat version, server environment, and tuning parameters used. I've aimed to use the best available benchmarks for each GPU but the hashing speeds may still be optimized further.</p>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Hash function</th>
+                <th style="text-align: right;">Hashing speed<br>(hashes per second)</th>
+                <th style="text-align: right;">Attacker advantage</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Argon2 (16 MiB, 3 iterations, 1 thread)</td>
+                <td style="text-align: right;">1,742</td>
+                <td style="text-align: right;">40</td>
+            </tr>
+            <tr>
+                <td>Argon2 (64 MiB, 3 iterations, 1 thread)</td>
+                <td style="text-align: right;">387</td>
+                <td style="text-align: right;">41</td>
+            </tr>
+            <tr>
+                <td>Argon2 (256 MiB, 3 iterations, 1 thread)</td>
+                <td style="text-align: right;">34</td>
+                <td style="text-align: right;">15</td>
+            </tr>
+            <tr>
+                <td>Bcrypt (cost 9)</td>
+                <td style="text-align: right;">1,457</td>
+                <td style="text-align: right;">34</td>
+            </tr>
+            <tr>
+                <td>Bcrypt (cost 11)</td>
+                <td style="text-align: right;">364</td>
+                <td style="text-align: right;">36</td>
+            </tr>
+            <tr>
+                <td>Bcrypt (cost 13)</td>
+                <td style="text-align: right;">91</td>
+                <td style="text-align: right;">36</td>
+            </tr>
+        </tbody>
+        <caption>Hashing speeds on a GTX 1080</caption>
+    </table>
+</div>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Hash function</th>
+                <th style="text-align: right;">Hashing speed<br>(hashes per second)</th>
+                <th style="text-align: right;">Attacker advantage</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Argon2 (16 MiB, 3 iterations, 1 thread)</td>
+                <td style="text-align: right;">11,465</td>
+                <td style="text-align: right;">263</td>
+            </tr>
+            <tr>
+                <td>Argon2 (64 MiB, 3 iterations, 1 thread)</td>
+                <td style="text-align: right;">2,400</td>
+                <td style="text-align: right;">257</td>
+            </tr>
+            <tr>
+                <td>Argon2 (256 MiB, 3 iterations, 1 thread)</td>
+                <td style="text-align: right;">178</td>
+                <td style="text-align: right;">82</td>
+            </tr>
+            <tr>
+                <td>Bcrypt (cost 9)</td>
+                <td style="text-align: right;">19,050</td>
+                <td style="text-align: right;">469</td>
+            </tr>
+            <tr>
+                <td>Bcrypt (cost 11)</td>
+                <td style="text-align: right;">4,763</td>
+                <td style="text-align: right;">476</td>
+            </tr>
+            <tr>
+                <td>Bcrypt (cost 13)</td>
+                <td style="text-align: right;">1,190</td>
+                <td style="text-align: right;">481</td>
+            </tr>
+        </tbody>
+        <caption>Hashing speeds on an RTX 5090</caption>
+    </table>
+</div>
+
+<p>Argon2 below 64 mebibytes and Bcrypt provide very similar effectiveness against the GTX 1080 but Argon2 is more effective against the RTX 5090. Above 64 mebibytes, both GPUs see a quadratic slowdown and Argon2 becomes the strongest option. Using a much more optimized CPU implementation from John the Ripper to benchmark the Hetzner server also yields similar trends.</p>
+
+<p>While Argon2 at high memory configuration is our ideal solution, hashing user passwords shouldn't take more than 100 to 200 millisecond on a regular web server. Even at 100 milliseconds per hash, the server would only be able to handle 10 login requests per second per CPU thread. Using multiple threads per hash to cut down the hashing time isn't useful either in this context as it will reduce the number of concurrent processes the server can handle. Unfortunately, using more than 64 mebibytes of memory with Argon2 pushes the hashing time well above that line.</p>
+
+<p>Focusing on Argon2 at lower memory configuration, the table below shows the estimated attacker advantage of Argon2 and Bcrypt on various NVidia GPUs, with both algorithms configured to run at about 20 milliseconds per hash on the Hetzner server. Argon2 hashing speed was derived from the RTX 5090 results and adjusted based on the memory bandwidth. The numbers for Bcrypt was derived from the GPU's Hashcat benchmarks. Note that the numbers of the GTX 1080 was also derived from the RTX 5090 for consistency. The actual benchmark showed a lower memory bandwidth utilization and it's likely that older GPUs like the GTX 1080 Ti and Titan V100 also shows similar performance characteristics on current implementations.</p>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>GPU</th>
+                <th style="text-align: right;">Argon2 attacker advantage</th>
+                <th style="text-align: right;">Bcrypt attacker advantage</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>GTX 1080 (2016)</td>
+                <td style="text-align: right;">47</td>
+                <td style="text-align: right;">34</td>
+            </tr>
+            <tr>
+                <td>GTX 1080 Ti (2017)</td>
+                <td style="text-align: right;">71</td>
+                <td style="text-align: right;">47</td>
+            </tr>
+            <tr>
+                <td>RTX 2080 Ti (2018)</td>
+                <td style="text-align: right;">90</td>
+                <td style="text-align: right;">77</td>
+            </tr>
+            <tr>
+                <td>RTX 3090 (2020)</td>
+                <td style="text-align: right;">137</td>
+                <td style="text-align: right;">164</td>
+            </tr>
+            <tr>
+                <td>RTX 3090 Ti (2022)</td>
+                <td style="text-align: right;">148</td>
+                <td style="text-align: right;">174</td>
+            </tr>
+            <tr>
+                <td>RTX 4090 (2022)</td>
+                <td style="text-align: right;">148</td>
+                <td style="text-align: right;">360</td>
+            </tr>
+            <tr>
+                <td>RTX 5090 (2025)</td>
+                <td style="text-align: right;">263</td>
+                <td style="text-align: right;">457</td>
+            </tr>
+            <tr>
+                <td>Tesla V100 SXM2 16GB (2018)</td>
+                <td style="text-align: right;">132</td>
+                <td style="text-align: right;">119</td>
+            </tr>
+            <tr>
+                <td>A100 PCIe 40GB (2020)</td>
+                <td style="text-align: right;">228</td>
+                <td style="text-align: right;">207</td>
+            </tr>
+            <tr>
+                <td>A100 SXM4 40GB (2020)</td>
+                <td style="text-align: right;">228</td>
+                <td style="text-align: right;">243</td>
+            </tr>
+            <tr>
+                <td>H100 PCIe 80GB (2022)</td>
+                <td style="text-align: right;">294</td>
+                <td style="text-align: right;">425</td>
+            </tr>
+            <tr>
+                <td>H100 SXM5 80GB (2022)</td>
+                <td style="text-align: right;">441</td>
+                <td style="text-align: right;">556</td>
+            </tr>
+        </tbody>
+        <caption>Estimated attacker advantage relative to a Hetzner CCX23 instance of Argon2 (16 MiB, 3 iterations, 1 degree of parallelism) and Bcrypt (cost 9)</caption>
+    </table>
+</div>
+
+<p>For both consumer and data center GPUs, older models are faster at Argon2 while newer models are faster at Bcrypt. At least for NVidia GPUs, the clock speed and shared memory has improved more than memory bandwidth and VRAM in general, though the gap is smaller for data center GPUs. Overall, the gap between Bcrypt and Argon2 at low memory configuration isn't very big, though I'd still give the edge to Argon2. It should be noted that GPU implementations of Bcrypt has been around for over a decade and has been heavily optimized. While current implementations of Argon2 are already close to the limit allowed by the memory bandwidth, it's possible that we might still see 10 to 20% performance improvements in the future.</p>
+
+<p>Aside from GPUs, field programmable gate arrays (FPGA) and application specific integrated circuits (ASIC) are another hardware to consider. Both FPGAs and ASICs allow the program to be directly implemented onto the hardware. They offer vastly superior cost and energy efficiency but at a high initial cost.</p>
+ 
+<p>Below is the same SHA-256 benchmark table with U3S23H, an ASIC-based Bitcoin miner. Bitcoins require 2 rounds of SHA-256 so it's not an exact comparison, but normalizing for it gives us a good estimate. Regardless, we can say that it's roughly 1,000 times faster and more efficient than GPUs.</p>
+
+<div class="table-wrapper">
+    <table>
+        <caption>SHA-256 benchmarks</caption>
+        <thead>
+            <tr>
+                <th>Device</th>
+                <th style="text-align: right;">Hashing speed<br>(hashes per second)</th>
+                <th style="text-align: right;">Cost<br>(hashes per second per dollar)</th>
+                <th style="text-align: right;">Power efficiency<br>(hashes per second per watt)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>MacBook Pro M3 Pro 11 cores (CPU, 2023)</td>
+                <td style="text-align: right;">171,638,888</td>
+                <td style="text-align: right;">156,177</td>
+                <td style="text-align: right;">5,721,296</td>
+            </tr>
+            <tr>
+                <td>RTX 5090 (GPU, 2025)</td>
+                <td style="text-align: right;">28,353,300,000</td>
+                <td style="text-align: right;">14,183,741</td>
+                <td style="text-align: right;">48,885,000</td>
+            </tr>
+            <tr>
+                <td>U3S23H (ASIC, 2025)</td>
+                <td style="text-align: right;">2,320,000,000,000,000</td>
+                <td style="text-align: right;">66,666,666,666</td>
+                <td style="text-align: right;">210,526,315,789</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p>Bcrypt can also run on these devices because of its low memory requirements. The table below shows hashing performance between GPUs and ZTEX 1.15y, an FPGA board.</p>
+
+<div class="table-wrapper">
+    <table>
+        <caption>Bcrypt at cost 5</caption>
+        <thead>
+            <tr>
+                <th>Device</th>
+                <th style="text-align: right;">Hashing speed<br>(hashes per second)</th>
+                <th style="text-align: right;">Cost<br>(hashes per second per dollar)</th>
+                <th style="text-align: right;">Power efficiency<br>(hashes per second per watt)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>GTX 1080 (GPU, 2016)</td>
+                <td style="text-align: right;">23,316</td>
+                <td style="text-align: right;">155</td>
+                <td style="text-align: right;">129</td>
+            </tr>
+            <tr>
+                <td>RTX 5090 (GPU, 2025)</td>
+                <td style="text-align: right;">304,800</td>
+                <td style="text-align: right;">152</td>
+                <td style="text-align: right;">525</td>
+            </tr>
+            <tr>
+                <td>ZTEX 1.15y (FPGA, 2011)</td>
+                <td style="text-align: right;">116,666</td>
+                <td style="text-align: right;">1,666</td>
+                <td style="text-align: right;">3,888</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p>The FPGA board is around 10 times faster and 1,000 times more efficient than the GPUs at running Bcrypt. On the other hand, the massive memory requirements of Argon2 relative to these devices makes it inefficient to run on them and sets Argon2 as the stronger hash function.</p>
+
+<p>It's hard to predict future improvements to GPUs and hashing implementations, but based on current data, I think there's enough reason to always pick Argon2 over Bcrypt. Argon2 with a high memory configuration will always be best option. Even at lower memory configuration, Argon2 is as secure as Bcrypt against GPUs and significantly stronger against dedicated hardware. We also can't forget that Argon2 is more flexible and less error-prone than Bcrypt. At the same time, Bcrypt is still holding strong after over 20 years and I don't think you need to ditch it if you're already using it.</p>
+
+<p>Special thanks to Alexander Peslyak (<a href="https://x.com/solardiz">Solar Designer</a>) for publishing benchmark results for Argon2 and answering some of my questions.</p>
