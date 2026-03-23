@@ -13,6 +13,8 @@
 
 <p>Password cracking is mostly done with GPUs these days because they're much better at hashing than CPUs. Hashing is just a series of small computation and the GPU's many tiny compute units excel at these kind of work. The table below shows hashing speeds of SHA-256, a fast and simple hashing algorithm, between different hardware. The CPU benchmarks were ran using Go's <code>crypto/sha2</code> standard library package and GPU benchmarks are from publicly available benchmarks. The device cost is either the rough second-hand market price or the retail price, whichever is cheaper.</p>
 
+<p><i>Note that all GPU benchmarks referenced in this blog post were collected from the internet and published by different users. I highly doubt that the data is outright fake but it is still possible that some data is inaccurate.</i></p>
+
 <div class="table-wrapper">
     <table>
         <caption>SHA-256 hashing performance</caption>
