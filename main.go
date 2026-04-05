@@ -90,7 +90,9 @@ func main() {
 			os.Exit(0)
 		}
 
-		blogPageHTML := createPageHTML(blogItem.title, string(blogContentHTMLBytes))
+		blogLink := fmt.Sprintf("https://pilcrowonpaper.com/blog/%d", blogItem.id)
+
+		blogPageHTML := createPageHTML(blogItem.title, blogLink, string(blogContentHTMLBytes))
 
 		distFilePath := path.Join("dist", "blog", blogContentHTMLFileName)
 		err = os.WriteFile(distFilePath, []byte(blogPageHTML), os.ModePerm)

@@ -28,7 +28,7 @@ func createHomePageHTML() string {
 	<li>RSS feed: <a href="/rss.xml">pilcrowonpaper.com/rss.xml</a></li>
 </ul>
 <p>The source code for this site is hosted at <a href="https://github.com/pilcrowonpaper/pilcrowonpaper.com">pilcrowonpaper/pilcrowonpaper.com</a> GitHub repository.</p>`
-	pageHTML := createPageHTML("Pilcrow", bodyHTML)
+	pageHTML := createPageHTML("Pilcrow", "https://pilcrowonpaper.com", bodyHTML)
 
 	return pageHTML
 }
@@ -52,7 +52,7 @@ func createBlogPageHTML(blogItems []blogItemStruct) string {
 
 	bodyHTML := fmt.Sprintf(bodyHTMLTemplate, blogPostsListHTML)
 
-	pageHTML := createPageHTML("Blog", bodyHTML)
+	pageHTML := createPageHTML("Blog", "https://pilcrowonpaper.com/blog", bodyHTML)
 
 	return pageHTML
 }
@@ -60,7 +60,7 @@ func createBlogPageHTML(blogItems []blogItemStruct) string {
 func createNotFoundPageHTML() string {
 	bodyHTML := `<h1>Page not found</h1>
 <p>The page you're looking for doesn't exist.</p>`
-	pageHTML := createPageHTML("Page not found", bodyHTML)
+	pageHTML := createPageHTML("Page not found", "", bodyHTML)
 
 	return pageHTML
 }
@@ -68,7 +68,12 @@ func createNotFoundPageHTML() string {
 //go:embed assets/stylesheet.css
 var stylesheetCSS string
 
-func createPageHTML(title string, mainHTML string) string {
+func createPageHTML(title string, link string, mainHTML string) string {
+	canonicalLinkHTML := ""
+	if link != "" {
+		canonicalLinkHTML = fmt.Sprintf(`<link rel="canonical" href="%s" />`, html.EscapeString(link))
+	}
+
 	pageHTMLTemplate := `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,6 +94,8 @@ func createPageHTML(title string, mainHTML string) string {
 	<meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@pilcrowonpaper">
 
+	%s
+
 	<style>%s</style>
 </head>
 
@@ -100,7 +107,7 @@ func createPageHTML(title string, mainHTML string) string {
 </body>
 </html>`
 
-	pageHTML := fmt.Sprintf(pageHTMLTemplate, html.EscapeString(title), html.EscapeString(title), stylesheetCSS, mainHTML)
+	pageHTML := fmt.Sprintf(pageHTMLTemplate, html.EscapeString(title), html.EscapeString(title), canonicalLinkHTML, stylesheetCSS, mainHTML)
 
 	return pageHTML
 }
