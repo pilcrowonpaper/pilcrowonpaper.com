@@ -12,12 +12,12 @@ func createHomePageHTML() string {
 <p>Hi! I'm a software developer in Tokyo interested in auth and application security. I love thinking through tiny details and creating things from scratch. Some of my other hobbies are cooking, taking photos, and traveling.</p>
 <p>Here are some projects I've worked on:</p>
 <ul>
-    <li><a href="https://basic-example.auth.pilcrowonpaper.com">basic-example.auth.pilcrowonpaper.com</a>: An example website that implements email address and password authentication following best practices.</li>
-	<li><a href="https://passwordless-example.auth.pilcrowonpaper.com">passwordless-example.auth.pilcrowonpaper.com</a>: An example website that implements email code sign-in and passkeys following best practices.</li>
-    <li><a href="https://lucia-auth.com">Lucia</a>: Former NPM package and current JavaScript/TypScript learning resource on session management.</li>
-    <li><a href="https://arcticjs.dev">Arctic</a>: An OAuth 2.0 client NPM package.</li>
-    <li><a href="https://oslojs.dev">Oslo</a>: A collection of auth-related NPM packages including packages for cryptographic-operations and the web authentication API (passkeys). </li>
-    <li><a href="https://thecopenhagenbook.com">The Copenhagen Book</a>: A general guideline on implementing auth in web applications.</li>
+    <li><a target="_blank" href="https://basic-example.auth.pilcrowonpaper.com">basic-example.auth.pilcrowonpaper.com</a>: An open-source example website that implements email address and password authentication following best practices.</li>
+    <li><a target="_blank" href="https://passwordless-example.auth.pilcrowonpaper.com">passwordless-example.auth.pilcrowonpaper.com</a>: An open-source example website that implements email code sign-in and passkeys following best practices.</li>
+    <li><a target="_blank" href="https://lucia-auth.com">Lucia</a>: Former NPM package and current JavaScript/TypScript learning resource on session management.</li>
+    <li><a target="_blank" href="https://arcticjs.dev">Arctic</a>: An OAuth 2.0 client NPM package.</li>
+    <li><a target="_blank" href="https://oslojs.dev">Oslo</a>: A collection of auth-related NPM packages including packages for cryptographic-operations and the web authentication API (passkeys). </li>
+    <li><a target="_blank" href="https://thecopenhagenbook.com">The Copenhagen Book</a>: A general guideline on implementing auth in web applications.</li>
 </ul>
 <p>Here are some links:</p>
 <ul>
