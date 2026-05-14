@@ -11,7 +11,7 @@ import (
 	"github.com/pilcrowonpaper/go-json"
 )
 
-//go:embed assets/pilcrow.jpg
+//go:embed assets/pilcrow.jpeg
 var pilcrowJPEGImage []byte
 
 //go:embed blog.json
