@@ -203,6 +203,32 @@ tbody td:last-child {
     padding-right: 1rem;
 }
 
+figure.square {
+    margin: 0 auto 1.5rem auto;
+    display: block;
+    width: min(70vh, 100%);
+}
+
+figure.square > img {
+    max-height: 70vh;
+    height: auto;
+    width: min(70vh, 100%);
+    background-color: #f4f4f4;
+}
+
+figure.square > figcaption {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    text-align: left;
+    font-style: italic;
+    caption-side: bottom;
+    width: 100%;
+    white-space: normal;
+    color: #3c3c3c;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+}
+
 /* reset */
 
 * {
