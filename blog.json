@@ -1,22 +1,27 @@
 [
-    {
-        "id": 1,
-        "title": "A look into \"GDPR compliant\" analytics",
-        "published_date": "2023-05-23"
-    },
-    {
-        "id": 13,
-        "title": "Managing NPM releases",
-        "published_date": "2025-01-26"
-    },
-    {
-        "id": 14,
-        "title": "Is Argon2 actually better than Bcrypt?",
-        "published_date": "2026-03-22"
-    },
-    {
-        "id": 15,
-        "title": "The best pizzas in Tokyo",
-        "published_date": "2026-05-16"
-    }
+	{
+		"id": 1,
+		"title": "A look into \"GDPR compliant\" analytics",
+		"published_date": "2023-05-23"
+	},
+	{
+		"id": 13,
+		"title": "Managing NPM releases",
+		"published_date": "2025-01-26"
+	},
+	{
+		"id": 14,
+		"title": "Is Argon2 actually better than Bcrypt?",
+		"published_date": "2026-03-22"
+	},
+	{
+		"id": 15,
+		"title": "The best pizzas in Tokyo",
+		"published_date": "2026-05-16"
+	},
+	{
+		"id": 16,
+		"title": "Understanding WebAuthn credential protection policy",
+		"published_date": "2026-05-25"
+	}
 ]
