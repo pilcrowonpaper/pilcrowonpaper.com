@@ -1,0 +1,9 @@
+This is the source code for my personal website.
+
+Website: pilcrowonpaper.com
+Repository: github.com/pilcrowonpaper/pilcrowonpaper.com
+Created by: pilcrow (pilcrowonpaper.com)
+
+To generate the HTML files in the 'dist' directory, run:
+
+>	go run .
