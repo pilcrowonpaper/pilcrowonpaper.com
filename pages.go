@@ -79,21 +79,23 @@ func createPageHTML(title string, link string, mainHTML string) string {
 <html lang="en">
 <head>
 	<title>%s</title>
-	<meta name="description" content="Pilcrow's personal website." />
+	<meta name="description" content="Pilcrow's personal website.">
 
-	<meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
 
-	<meta property="og:title" content="%s" />
-	<meta property="og:type" content="website" />
-	<meta property="og:locale" content="en_US" />
-	<meta property="og:site_name" content="Pilcrow" />
-	<meta property="og:description" content="Pilcrow's personal website." />
-	<meta property="og:url" content="https://pilcrowonpaper.com" />
-	<meta property="og:image" content="https://pilcrowonpaper.com/pilcrow.jpeg" />
+	<meta property="og:title" content="%s">
+	<meta property="og:type" content="website">
+	<meta property="og:locale" content="en_US">
+	<meta property="og:site_name" content="Pilcrow">
+	<meta property="og:description" content="Pilcrow's personal website.">
+	<meta property="og:url" content="https://pilcrowonpaper.com">
+	<meta property="og:image" content="https://pilcrowonpaper.com/pilcrow.jpeg">
 
 	<meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@pilcrowonpaper">
+
+    <link rel="icon" type="image/jpeg" href="https://pilcrowonpaper.com/pilcrow.jpeg">
 
 	%s
 

@@ -1,15 +1,15 @@
 <h1>Understanding WebAuthn credential protection policy</h1>
 
+<aside class="post-description">This blog post was published on May 25, 2026.</aside>
+
 <p>
-	<i
-		>This post assumes you're already familiar with the basics of
-		WebAuthn.</i
-	>
+	<i> This post assumes you're already familiar with the basics of WebAuthn. </i>
 </p>
 
 <p>
-	When creating a WebAuthn credential, you can specify whether it should be
-	discoverable using the <code>residentKey</code> option.
+	When creating a WebAuthn credential, you can specify whether it should be discoverable using the
+	<code>residentKey</code>
+	option.
 </p>
 
 <pre><code>const credential = await navigator.credentials.create({
@@ -23,16 +23,15 @@
 });</code></pre>
 
 <p>
-	However, the relying party cannot control when or how the credential can be
-	discovered. You may want it to become discoverable only after user
-	verification and hide the account’s existence from snooping users. This can
-	be especially important for security keys, where unlike devices or password
-	managers that usually require initial authentication, physical possession
-	alone is often sufficient to reveal registered credentials. To address this,
-	the CTAP 2.1 specification defines a new credential protection extension,
-	available through the <code>credentialProtectionPolicy</code> extension
-	input. CTAP is the specification that defines how platforms
-	(devices/browsers) and roaming authenticators (security keys) interact.
+	However, the relying party cannot control when or how the credential can be discovered. You may
+	want it to become discoverable only after user verification and hide the account’s existence from
+	snooping users. This can be especially important for security keys, where unlike devices or
+	password managers that usually require initial authentication, physical possession alone is often
+	sufficient to reveal registered credentials. To address this, the CTAP 2.1 specification defines a
+	new credential protection extension, available through the
+	<code>credentialProtectionPolicy</code>
+	extension input. CTAP is the specification that defines how platforms (devices/browsers) and
+	roaming authenticators (security keys) interact.
 </p>
 
 <pre><code>const credential = await navigator.credentials.create({
@@ -46,63 +45,63 @@
 });</code></pre>
 
 <p>
-	If the default value <code>userVerificationOptional</code> is used, the
-	credential can be discovered and used without user verification. If
-	<code>userVerificationOptionalWithCredentialIDList</code> is used, the
-	credential cannot be discovered without user verification, but it can still
-	be discovered and used without user verification if the credential ID is
-	provided by the relying party. This matches the security of non-discoverable
-	credentials. Finally, <code>userVerificationRequired</code> indicates that
-	the credential cannot be discovered or used without user verification.
+	If the default value <code>userVerificationOptional</code> is used, the credential can be
+	discovered and used without user verification. If
+	<code>userVerificationOptionalWithCredentialIDList</code>
+	is used, the credential cannot be discovered without user verification, but it can still be
+	discovered and used without user verification if the credential ID is provided by the relying
+	party. This matches the security of non-discoverable credentials. Finally,
+	<code>userVerificationRequired</code>
+	indicates that the credential cannot be discovered or used without user verification.
 </p>
 
 <p>
-	It’s important to highlight that the extension controls credential discovery
-	within the authenticator. It is still up to the relying party to verify
-	whether the assertion was made with user verification if they require it.
+	It’s important to highlight that the extension controls credential discovery within the
+	authenticator. It is still up to the relying party to verify whether the assertion was made with
+	user verification if they require it.
 </p>
 
 <p>
-	The related <code>enforceCredentialProtectionPolicy</code> extension input
-	configures what should happen if the authenticator does not support
-	credential protection policy. If set to <code>true</code>, the operation
-	will fail if it cannot create a credential at the specified security level.
-	Note that if you use a non-roaming authenticator that does not support
-	<code>credentialProtectionPolicy</code> but the browser does, the request
-	will be rejected. As such, this should only be set to <code>true</code> if
-	you want to allow roaming authenticators.
+	The related <code>enforceCredentialProtectionPolicy</code> extension input configures what should
+	happen if the authenticator does not support credential protection policy. If set to
+	<code>true</code>, the operation will fail if it cannot create a credential at the specified
+	security level. Note that if you use a non-roaming authenticator that does not support
+	<code>credentialProtectionPolicy</code>
+	but the browser does, the request will be rejected. As such, this should only be set to
+	<code>true</code>
+	if you want to allow roaming authenticators.
 </p>
 
 <p>
-	As for browser support for the extension inputs, Chrome and Firefox support
-	them, while Safari does not and will simply ignore them.
+	As for browser support for the extension inputs, Chrome and Firefox support them, while Safari
+	does not and will simply ignore them.
 </p>
 
 <p>
-	Browsers can also silently apply a default value if the relying party does
-	not specify one, which is specifically the case in Chrome.
+	Browsers can also silently apply a default value if the relying party does not specify one, which
+	is specifically the case in Chrome.
 </p>
 
 <p>
 	If <code>residentKey</code> is <code>preferred</code> or
 	<code>required</code>, Chrome uses
-	<code>userVerificationOptionalWithCredentialIDList</code>. As noted, this
-	helps prevent someone with physical access to the authenticator from seeing
-	which accounts are registered on it.
+	<code>userVerificationOptionalWithCredentialIDList</code>. As noted, this helps prevent someone
+	with physical access to the authenticator from seeing which accounts are registered on it.
 </p>
 
 <p>
 	If <code>residentKey</code> is <code>required</code> and
-	<code>userVerification</code> is <code>preferred</code>, Chrome will use
-	<code>userVerificationRequired</code> instead. The confusing part is that
-	this is not related to credential discovery, but rather serves as a safety
-	measure to enforce user verification. Chrome assumes the credential is
-	likely to be used as a single authentication step, since
-	<code>preferred</code> is commonly used even for passkey authentication.
-	However, because user verification is still optional and it is up to the
-	relying party to check for it, if the server does not properly enforce user
-	verification during authentication, someone could sign in as the user with
-	only physical access to the authenticator.
+	<code>userVerification</code>
+	is <code>preferred</code>, Chrome will use
+	<code>userVerificationRequired</code>
+	instead. The confusing part is that this is not related to credential discovery, but rather serves
+	as a safety measure to enforce user verification. Chrome assumes the credential is likely to be
+	used as a single authentication step, since
+	<code>preferred</code>
+	is commonly used even for passkey authentication. However, because user verification is still
+	optional and it is up to the relying party to check for it, if the server does not properly
+	enforce user verification during authentication, someone could sign in as the user with only
+	physical access to the authenticator.
 </p>
 
 <p>
