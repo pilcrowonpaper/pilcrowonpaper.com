@@ -23,5 +23,10 @@
 		"id": 16,
 		"title": "Understanding WebAuthn credential protection policy",
 		"published_date": "2026-05-25"
+	},
+	{
+		"id": 17,
+		"title": "I started a new auth project again",
+		"published_date": "2026-06-03"
 	}
 ]
