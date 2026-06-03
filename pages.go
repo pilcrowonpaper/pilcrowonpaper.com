@@ -10,16 +10,20 @@ import (
 func createHomePageHTML() string {
 	bodyHTML := `<h1>Pilcrow</h1>
 <p>Hi! I'm a software developer in Tokyo interested in auth and application security. I love thinking through tiny details and creating things from scratch. Some of my other hobbies are cooking, taking photos, and traveling.</p>
-<p>Here are some projects I've worked on:</p>
+<h2>Current projects</h2>
 <ul>
+	<li><a href="https://auth.pilcrowonpaper.com">Auth book</a>: a collection of guides, recommendations, and examples for implementing auth in web applications.</li>
     <li><a href="https://basic-example.auth.pilcrowonpaper.com">Basic auth example</a>: An open-source example website that implements email address and password authentication following best practices.</li>
     <li><a href="https://passwordless-example.auth.pilcrowonpaper.com">Passwordless auth example</a>: An open-source example website that implements email code sign-in and passkeys following best practices.</li>
-    <li><a href="https://lucia-auth.com">Lucia</a>: Former NPM package and current JavaScript/TypScript learning resource on session management.</li>
-    <li><a href="https://arcticjs.dev">Arctic</a>: An OAuth 2.0 client NPM package.</li>
-    <li><a href="https://oslojs.dev">Oslo</a>: A collection of auth-related NPM packages including packages for cryptographic-operations and the web authentication API (passkeys). </li>
-    <li><a href="https://thecopenhagenbook.com">The Copenhagen Book</a>: A general guideline on implementing auth in web applications.</li>
 </ul>
-<p>Here are some links:</p>
+<h2>Past projects</h2>
+<ul>
+	<li><a href="https://lucia-auth.com">Lucia</a>: Former NPM package and current JavaScript/TypScript learning resource on session management.</li>
+	<li><a href="https://arcticjs.dev">Arctic</a>: An OAuth 2.0 client NPM package.</li>
+	<li><a href="https://oslojs.dev">Oslo</a>: A collection of auth-related NPM packages including packages for cryptographic-operations and the web authentication API (passkeys). </li>
+	<li><a href="https://thecopenhagenbook.com">The Copenhagen Book</a>: A general guideline on implementing auth in web applications.</li>
+</ul>
+<h2>Links</h2>
 <ul>
 	<li>Blog: <a href="/blog">pilcrowonpaper.com/blog</a></li>
     <li>GitHub and GitHub Sponsors: <a href="https://github.com/pilcrowonpaper">github.com/pilcrowonpaper</a></li>
@@ -27,8 +31,8 @@ func createHomePageHTML() string {
     <li>Bluesky: <a href="https://bsky.app/profile/pilcrowonpaper.com">bsky.app/profile/pilcrowonpaper.com</a></li>
     <li>Email: <a href="mailto:pilcrow@pilcrowonpaper.com">pilcrow@pilcrowonpaper.com</a></li>
 	<li>RSS feed: <a href="/rss.xml">pilcrowonpaper.com/rss.xml</a></li>
-</ul>
-<p>The source code for this site is hosted at <a href="https://github.com/pilcrowonpaper/pilcrowonpaper.com">pilcrowonpaper/pilcrowonpaper.com</a> GitHub repository.</p>`
+	<li>Source code: <a href="https://github.com/pilcrowonpaper/pilcrowonpaper.com">github.com/pilcrowonpaper/pilcrowonpaper.com</a></li>
+</ul>`
 	pageHTML := createPageHTML("Pilcrow", "https://pilcrowonpaper.com", bodyHTML)
 
 	return pageHTML
