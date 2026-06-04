@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"html"
+	"path"
 	"strings"
 )
 
@@ -33,7 +34,7 @@ func createHomePageHTML() string {
 	<li>RSS feed: <a href="/rss.xml">pilcrowonpaper.com/rss.xml</a></li>
 	<li>Source code: <a href="https://github.com/pilcrowonpaper/pilcrowonpaper.com">github.com/pilcrowonpaper/pilcrowonpaper.com</a></li>
 </ul>`
-	pageHTML := createPageHTML("Pilcrow", "https://pilcrowonpaper.com", bodyHTML)
+	pageHTML := createPageHTML("Pilcrow", "/", bodyHTML)
 
 	return pageHTML
 }
@@ -57,7 +58,7 @@ func createBlogPageHTML(blogItems []blogItemStruct) string {
 
 	bodyHTML := fmt.Sprintf(bodyHTMLTemplate, blogPostsListHTML)
 
-	pageHTML := createPageHTML("Blog", "https://pilcrowonpaper.com/blog", bodyHTML)
+	pageHTML := createPageHTML("Blog", "/blog", bodyHTML)
 
 	return pageHTML
 }
@@ -73,10 +74,22 @@ func createNotFoundPageHTML() string {
 //go:embed assets/stylesheet.css
 var stylesheetCSS string
 
-func createPageHTML(title string, link string, mainHTML string) string {
-	canonicalLinkHTML := ""
-	if link != "" {
-		canonicalLinkHTML = fmt.Sprintf(`<link rel="canonical" href="%s" />`, html.EscapeString(link))
+func createPageHTML(title string, pagePath string, mainHTML string) string {
+	var pageURL string
+	if pagePath == "/" {
+		pageURL = "https://pilcrowonpaper.com"
+	} else if pagePath != "" {
+		pageURL = fmt.Sprintf("https://pilcrowonpaper.com%s", path.Clean(pagePath))
+	}
+
+	ogURL := "https://pilcrowonpaper.com"
+	if pageURL != "" {
+		ogURL = pageURL
+	}
+
+	var canonicalLinkHTML string
+	if pageURL != "" {
+		canonicalLinkHTML = fmt.Sprintf(`<link rel="canonical" href="%s">`, pageURL)
 	}
 
 	pageHTMLTemplate := `<!DOCTYPE html>
@@ -93,7 +106,7 @@ func createPageHTML(title string, link string, mainHTML string) string {
 	<meta property="og:locale" content="en_US">
 	<meta property="og:site_name" content="Pilcrow">
 	<meta property="og:description" content="Pilcrow's personal website.">
-	<meta property="og:url" content="https://pilcrowonpaper.com">
+	<meta property="og:url" content="%s">
 	<meta property="og:image" content="https://pilcrowonpaper.com/pilcrow.jpeg">
 
 	<meta name="twitter:card" content="summary">
@@ -114,7 +127,7 @@ func createPageHTML(title string, link string, mainHTML string) string {
 </body>
 </html>`
 
-	pageHTML := fmt.Sprintf(pageHTMLTemplate, html.EscapeString(title), html.EscapeString(title), canonicalLinkHTML, stylesheetCSS, mainHTML)
+	pageHTML := fmt.Sprintf(pageHTMLTemplate, html.EscapeString(title), html.EscapeString(title), html.EscapeString(ogURL), canonicalLinkHTML, stylesheetCSS, mainHTML)
 
 	return pageHTML
 }
