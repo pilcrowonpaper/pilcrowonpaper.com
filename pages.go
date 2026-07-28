@@ -13,7 +13,7 @@ func createHomePageHTML() string {
 <p>Hi! I'm a software developer in Tokyo interested in auth and application security. I love thinking through tiny details and creating things from scratch. Some of my other hobbies are cooking, taking photos, and traveling.</p>
 <h2>Current projects</h2>
 <ul>
-	<li><a href="https://auth.pilcrowonpaper.com">Auth book</a>: a collection of guides, recommendations, and examples for implementing auth in web applications.</li>
+	<li><a href="https://auth.pilcrowonpaper.com">Auth book</a>: A collection of guides, recommendations, and examples for implementing auth in web applications.</li>
     <li><a href="https://basic-example.auth.pilcrowonpaper.com">Basic auth example</a>: An open-source example website that implements email address and password authentication following best practices.</li>
     <li><a href="https://passwordless-example.auth.pilcrowonpaper.com">Passwordless auth example</a>: An open-source example website that implements email code sign-in and passkeys following best practices.</li>
 </ul>
