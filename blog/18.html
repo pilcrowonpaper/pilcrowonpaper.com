@@ -1,0 +1,46 @@
+<h1>I am deprecating most of my open-source NPM packages</h1>
+
+<aside class="post-description">This blog post was published on July 29, 2026.</aside>
+
+<p>
+	I am deprecating the Arctic NPM package and most NPM packages published under the Oslo project.
+	The only package I will continue to maintain is <code>@oslojs/encoding</code>. I am also scaling
+	back the scope of lucia-auth.com.
+</p>
+
+<p>
+	On Lucia, the website and the repository will only contain the code and documentation for what’s
+	necessary to replace the version 3 of the previously deprecated NPM package. I have also archived
+	all example projects on GitHub and I will be shutting down the project’s Discord server by the end
+	of the year. Even with my recent focus on Go, I still want to create resources for JavaScript in
+	the future. However, I think publishing them under as a different project will be the better
+	option.
+</p>
+
+<p>
+	On Arctic, the NPM package is deprecated. I haven’t touched the project in nearly a year and I
+	can’t see myself working on it in the future either. I’ve decided that it’s better to deprecate it
+	rather than to keep pretending it’s maintained, especially with how much NPM downloads it’s
+	getting recently. As for my personal gripes, first, it has become very bloated with the number of
+	providers. At the same time, I don’t think it’s very useful. The API isn’t tailored to each
+	specific provider’s OAuth 2.0 implementation. But my biggest issue is that I don’t think I
+	should’ve made the library in the first place. At the very least, I should’ve made a separate
+	package for each provider. However, I think the OAuth 2.0 protocol isn’t an ideal layer to
+	abstract into a library and any library should target an abstraction one or two layer above the
+	it. It’s too tied down to the underlying HTTP protocol and implementations can extend the API
+	however they want. Similar to Lucia, the website now just contains example code for replacing the
+	package.
+</p>
+
+<p>
+	On Oslo, the NPM packages are deprecated except for the encoding package. The encoding package is
+	used by Astro core and I will wait until the new <code>Uint8Array.toBase64()</code> and
+	<code>Uint8Array.fromBase64()</code>
+	(and the hex encoding equivalent) are available on all actively-maintained versions of Node.js
+	before deprecating it (I expect around 2028). I do think some of the packages like the HOTP/TOTP
+	package have some merit, and I may provide a replacement package under a different name in the
+	future. Technically, I can just do that now, but I’d rather not publish packages that I don’t have
+	immediate uses for them.
+</p>
+
+<p>For me, now seemed like a good time to move forward and focus on other projects.</p>
